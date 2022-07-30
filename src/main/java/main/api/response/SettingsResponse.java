@@ -1,9 +1,11 @@
 package main.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class SettingsResponse {
 
   @JsonProperty("MULTIUSER_MODE")
@@ -12,5 +14,4 @@ public class SettingsResponse {
   private boolean postPremoderation;
   @JsonProperty("STATISTICS_IS_PUBLIC")
   private boolean statisticsIsPublic;
-
 }

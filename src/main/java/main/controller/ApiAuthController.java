@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class ApiAuthController {
 
-  AuthCheckService authCheckService;
+  private final AuthCheckService authCheckService;
 
   public ApiAuthController(AuthCheckService authCheckService) {
     this.authCheckService = authCheckService;

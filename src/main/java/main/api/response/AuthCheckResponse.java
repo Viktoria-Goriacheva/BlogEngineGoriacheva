@@ -1,17 +1,24 @@
 package main.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
+import main.dto.UserDTOForCheck;
 import org.springframework.stereotype.Component;
+
+@Getter
+@Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Component
 public class AuthCheckResponse {
 
   private boolean result;
-
-  private UserResponse user;
+  @JsonProperty("user")
+  private UserDTOForCheck user;
 
   public AuthCheckResponse() {
-    user = new UserResponse();
+    user = new UserDTOForCheck();
   }
 
   public AuthCheckResponse(boolean result) {
@@ -19,21 +26,5 @@ public class AuthCheckResponse {
     if (!result) {
       this.user = null;
     }
-  }
-
-  public boolean isResult() {
-    return result;
-  }
-
-  public void setResult(boolean result) {
-    this.result = result;
-  }
-
-  public UserResponse getUser() {
-    return user;
-  }
-
-  public void setUser(UserResponse user) {
-    this.user = user;
   }
 }
