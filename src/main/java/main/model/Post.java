@@ -18,8 +18,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @ToString
 @Entity
 @Table(name = "posts")
@@ -58,102 +64,4 @@ public class Post {
   @OneToMany(mappedBy = "post")
   private List<PostComment> comments;
 
-  public List<Tag> getTags() {
-    return tags;
-  }
-
-  public void setTags(List<Tag> tags) {
-    this.tags = tags;
-  }
-
-  public Post() {
-  }
-
-  public List<PostComment> getComments() {
-    return comments;
-  }
-
-  public void setComments(List<PostComment> comments) {
-    this.comments = comments;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  public byte getIsActive() {
-    return isActive;
-  }
-
-  public void setIsActive(byte isActive) {
-    this.isActive = isActive;
-  }
-
-  public ModerationStatus getModerationStatus() {
-    return moderationStatus;
-  }
-
-  public void setModerationStatus(ModerationStatus moderationStatus) {
-    this.moderationStatus = moderationStatus;
-  }
-
-  public int getModeratorId() {
-    return moderatorId;
-  }
-
-  public void setModeratorId(int moderatorId) {
-    this.moderatorId = moderatorId;
-  }
-
-  public LocalDateTime getTime() {
-    return time;
-  }
-
-  public void setTime(LocalDateTime time) {
-    this.time = time;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getText() {
-    return text;
-  }
-
-  public void setText(String text) {
-    this.text = text;
-  }
-
-  public int getViewCount() {
-    return viewCount;
-  }
-
-  public void setViewCount(int viewCount) {
-    this.viewCount = viewCount;
-  }
-
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(User user) {
-    this.user = user;
-  }
-
-  public List<PostVote> getPostVotes() {
-    return postVotes;
-  }
-
-  public void setPostVotes(List<PostVote> postVotes) {
-    this.postVotes = postVotes;
-  }
 }

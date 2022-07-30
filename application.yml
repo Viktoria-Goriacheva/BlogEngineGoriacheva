@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/blog?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: ecyhbdcbhg346((87fM
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database : postgresql
+    database-platform : org.hibernate.dialect.PostgreSQL10Dialect
+    hibernate:
+      ddl-auto: create
+  http:
+    encoding:
+      charset : UTF-8
+      enabled : true
+      force : true
+server:
+  port : 8888
+blog:
+  title : DevPub
+  subtitle : Рассказы разработчиков
+  phone : +7 922 863-65-40
+  email : grumblya@mail.ru
+  copyright : Виктория Горячева
+  copyrightFrom : 2005

@@ -11,8 +11,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @ToString
 @Entity
 @Table(name = "post_votes")
@@ -32,47 +38,4 @@ public class PostVote {
   @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(name = "post_id")
   private Post post;
-
-  public PostVote() {
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  public LocalDateTime getTime() {
-    return time;
-  }
-
-  public void setTime(LocalDateTime time) {
-    this.time = time;
-  }
-
-  public byte getValue() {
-    return value;
-  }
-
-  public void setValue(byte value) {
-    this.value = value;
-  }
-
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(User user) {
-    this.user = user;
-  }
-
-  public Post getPost() {
-    return post;
-  }
-
-  public void setPost(Post post) {
-    this.post = post;
-  }
 }

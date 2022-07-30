@@ -9,8 +9,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
-
+@NoArgsConstructor
+@Getter
+@Setter
 @EqualsAndHashCode
 @ToString
 @Entity
@@ -24,22 +29,4 @@ public class Tag2Post implements Serializable {
   @EmbeddedId
   private Key key;
 
-  public Tag2Post() {
-  }
-
-  public Key getKey() {
-    return key;
-  }
-
-  public void setKey(Key key) {
-    this.key = key;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
 }

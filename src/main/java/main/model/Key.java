@@ -5,7 +5,13 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @EqualsAndHashCode
 @Embeddable
 public class Key implements Serializable {
@@ -17,22 +23,4 @@ public class Key implements Serializable {
   @JoinColumn(name = "tag_id")
   private Tag tagId;
 
-  public Key() {
-  }
-
-  public Post getPost() {
-    return postId;
-  }
-
-  public void setPost(Post post) {
-    this.postId = post;
-  }
-
-  public Tag getTag() {
-    return tagId;
-  }
-
-  public void setTag(Tag tag) {
-    this.tagId = tag;
-  }
 }
