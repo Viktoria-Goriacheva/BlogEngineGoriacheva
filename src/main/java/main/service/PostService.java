@@ -79,13 +79,13 @@ public class PostService {
   private void sortCollection(PostMode mode, List<PostDTO> postDtoList) {
 
     switch (mode) {
-      case popular:
+      case POPULAR:
         postDtoList.sort(COMPARE_BY_COMMENT_COUNT);
         break;
-      case best:
+      case BEST:
         postDtoList.sort(COMPARE_BY_LIKE_COUNT);
         break;
-      case early:
+      case EARLY:
         postDtoList.sort(Collections.reverseOrder(COMPARE_BY_TIME));
         break;
       default:

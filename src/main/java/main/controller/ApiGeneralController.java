@@ -1,10 +1,14 @@
 package main.controller;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
-import main.api.response.InitResponse;
+import main.api.response.CalendarResponse;
 import main.api.response.SettingsResponse;
 import main.api.response.TagResponse;
+import main.dto.SiteInfoDTO;
+import main.service.CalendarService;
 import main.service.SettingsService;
+import main.service.SiteInfoService;
 import main.service.TagService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,23 +22,32 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiGeneralController {
 
   private final SettingsService settingsService;
-  private final InitResponse initResponse;
+  private final SiteInfoService siteInfoService;
   private final TagService tagService;
+  private final CalendarService calendarService;
 
   @GetMapping("/settings")
-  public SettingsResponse settings() {
+  private SettingsResponse settings() {
     return settingsService.getGlobalSettings();
   }
 
   @GetMapping("/init")
-  public InitResponse init() {
-    return initResponse;
+  private SiteInfoDTO init() {
+    return siteInfoService.getSiteInfo();
   }
 
   @GetMapping("/tag")
-  private ResponseEntity<TagResponse> getTag(
+  private ResponseEntity<TagResponse> tag(
       @RequestParam(required = false, defaultValue = "") String query) {
     return ResponseEntity.ok(tagService.tag(query));
+  }
+
+  @GetMapping("/calendar")
+  private ResponseEntity<CalendarResponse> calendar(
+      @RequestParam(required = false, defaultValue = "0") String year) {
+    return (year.equals("0")) ? ResponseEntity.ok(
+        calendarService.calendar(String.valueOf(LocalDateTime.now().getYear())))
+        : ResponseEntity.ok(calendarService.calendar(year));
   }
 }
 
