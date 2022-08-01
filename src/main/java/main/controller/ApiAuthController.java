@@ -1,5 +1,6 @@
 package main.controller;
 
+import lombok.RequiredArgsConstructor;
 import main.api.response.AuthCheckResponse;
 import main.service.AuthCheckService;
 import org.springframework.http.HttpStatus;
@@ -9,14 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class ApiAuthController {
 
   private final AuthCheckService authCheckService;
-
-  public ApiAuthController(AuthCheckService authCheckService) {
-    this.authCheckService = authCheckService;
-  }
 
   @GetMapping("/check")
   public ResponseEntity<AuthCheckResponse> authCheck() {

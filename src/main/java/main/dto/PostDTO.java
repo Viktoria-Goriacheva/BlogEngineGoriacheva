@@ -11,31 +11,18 @@ import lombok.ToString;
 import org.jsoup.Jsoup;
 @Getter
 @Setter
-@ToString
-@RequiredArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "id",
-    "timestamp",
-    "user",
-    "title",
-    "announce",
-    "likeCount",
-    "dislikeCount",
-    "commentCount",
-    "viewCount"
-})
 public class PostDTO {
 
-  public Integer id;
-  public Long timestamp;
-  public UserDTOForPost user;
-  public String title;
-  public String announce;
-  public Integer likeCount;
-  public Integer dislikeCount;
-  public Integer commentCount;
-  public Integer viewCount;
+  private Integer id;
+  private Long timestamp;
+  private UserDTOForPost user;
+  private String title;
+  private String announce;
+  private Integer likeCount;
+  private Integer dislikeCount;
+  private Integer commentCount;
+  private Integer viewCount;
 
 }
 

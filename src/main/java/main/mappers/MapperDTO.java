@@ -6,6 +6,7 @@ import main.model.Post;
 import main.model.Tag;
 import org.mapstruct.Mapper;
 
+
 @Mapper(componentModel = "spring")
 public interface MapperDTO {
 

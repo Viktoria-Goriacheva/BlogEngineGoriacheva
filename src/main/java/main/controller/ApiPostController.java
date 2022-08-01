@@ -19,7 +19,7 @@ public class ApiPostController {
 
   @GetMapping("/post")
   public ResponseEntity<PostResponse> getPost(
-      @RequestParam(required = false, defaultValue = "recent") PostMode mode,
+      @RequestParam(value = "recent", required = false, defaultValue = "RECENT") PostMode mode,
       @RequestParam(required = false, defaultValue = "0") int offset,
       @RequestParam(required = false, defaultValue = "10") int limit) {
 

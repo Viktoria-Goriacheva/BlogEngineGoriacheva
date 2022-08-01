@@ -1,21 +1,19 @@
 package main.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import main.dto.PostDTO;
 import org.springframework.stereotype.Component;
 
 @Component
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PostResponse {
+public class CalendarResponse {
 
-  private Integer count;
-  @JsonProperty("posts")
-  private List<PostDTO> postsDTO;
+  private Set<Integer> years;
+  private Map<String, Long> posts;
 }

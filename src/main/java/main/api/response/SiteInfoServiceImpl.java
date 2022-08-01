@@ -1,14 +1,12 @@
 package main.api.response;
 
-import lombok.Getter;
-import lombok.Setter;
+import main.dto.SiteInfoDTO;
+import main.service.SiteInfoService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-@Getter
-@Setter
-public class InitResponse {
+@Service
+public class SiteInfoServiceImpl implements SiteInfoService {
 
   @Value("${blog.title}")
   private String title;
@@ -22,4 +20,11 @@ public class InitResponse {
   private String copyright;
   @Value("${blog.copyrightFrom}")
   private String copyrightFrom;
+
+  public SiteInfoDTO getSiteInfo() {
+
+    return new SiteInfoDTO(title, subtitle, phone, email, copyright, copyrightFrom);
+
+  }
 }
+

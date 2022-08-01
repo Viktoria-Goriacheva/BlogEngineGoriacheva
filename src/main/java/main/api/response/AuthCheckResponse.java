@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 public class AuthCheckResponse {
 
   private boolean result;
-  @JsonProperty("user")
   private UserDTOForCheck user;
 
   public AuthCheckResponse() {
