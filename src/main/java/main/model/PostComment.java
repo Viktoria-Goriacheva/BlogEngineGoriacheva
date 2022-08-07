@@ -32,7 +32,7 @@ public class PostComment {
   @NotNull
   private String text;
   @Column(name = "parent_id")
-  private int parentId;
+  private Integer parentId;
   @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
   private Post post;
   @ManyToOne(fetch = FetchType.LAZY)

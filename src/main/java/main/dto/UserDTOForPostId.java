@@ -2,16 +2,14 @@ package main.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TagDTO {
+public class UserDTOForPostId {
 
+  private Integer id;
   private String name;
-  private double weight;
+  private String photo;
 }

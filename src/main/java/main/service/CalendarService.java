@@ -23,7 +23,7 @@ public class CalendarService {
 
   public CalendarResponse calendar(String year) {
     CalendarResponse calendarResponse = new CalendarResponse();
-    List<Post> allPosts = postRepository.findAll();
+    List<Post> allPosts = postRepository.findAllPost();
     Set<Integer> years = setYears(allPosts);
     Map<String, Long> posts = findPosts(allPosts, year);
 

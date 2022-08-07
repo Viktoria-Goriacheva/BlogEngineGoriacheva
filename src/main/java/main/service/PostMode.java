@@ -1,8 +1,8 @@
 package main.service;
 
 public enum PostMode {
-  RECENT,
   POPULAR,
+  EARLY,
   BEST,
-  EARLY
+  RECENT
 }
