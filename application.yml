@@ -16,6 +16,9 @@ spring:
       force : true
 server:
   port : 8888
+  tomcat:
+    uri-encoding: UTF-8
+
 blog:
   title : DevPub
   subtitle : Рассказы разработчиков

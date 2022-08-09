@@ -15,7 +15,6 @@ import main.dto.CommentDTO;
 import main.dto.PostDTO;
 import main.dto.UserDTOForPost;
 import main.dto.UserDTOForPostId;
-import main.mappers.MapperDTO;
 import main.model.Post;
 import main.model.PostComment;
 import main.model.PostVote;
@@ -32,7 +31,6 @@ public class PostService {
   private final PostRepository postRepository;
   private final UserRepository userRepository;
   private final PostCommentRepository postCommentRepository;
-  private final MapperDTO mapperDTO;
 
   public PostResponse getAllPosts(PostMode mode, int offset, int limit) {
     PostResponse postResponse = new PostResponse();
@@ -46,9 +44,7 @@ public class PostService {
   }
 
   public PostIdResponse getPostId(Integer id) {
-    PostIdResponse postId;
     Post post = postRepository.findByIdPost(id);
-    postId = mapperDTO.PostToPostIdResponse(post);
     List<PostVote> postVotesList = post.getPostVotes();
     int like = 0;
     int dislike = 0;
@@ -58,19 +54,25 @@ public class PostService {
       }
       dislike++;
     }
-    postId.setLikeCount(like);
-    postId.setDislikeCount(dislike);
     Duration duration = Duration.between(post.getTime(), LocalDateTime.now());
     long secondsAfterCreatePost = (System.currentTimeMillis() / 1000L) - duration.getSeconds();
-    postId.setTimestamp(secondsAfterCreatePost);
+    List<String> list = postRepository.findTagsList(id);
     User userDTO = userRepository.findByIdUserForPostId(postRepository.findIdUser(id));
-    UserDTOForPost user = mapperDTO.UserToUserDTOForPost(userDTO);
-    postId.setUser(user);
-    postId.setTags(getTagsForPostId(id));
-    postId.setComments(getCommentsForPostId(id));
-    postId.setActive(getActive(post));
-    postId.setViewCount(getViewCounts(user, post));
-
+    UserDTOForPost user = UserDTOForPost.builder().id(userDTO.getId()).name(userDTO.getName())
+        .build();
+    PostIdResponse postId = PostIdResponse.builder()
+        .id(post.getId())
+        .active(getActive(post))
+        .timestamp(secondsAfterCreatePost)
+        .comments(getCommentsForPostId(id))
+        .likeCount(like)
+        .dislikeCount(dislike)
+        .viewCount(getViewCounts(user, post))
+        .tags(list)
+        .text(post.getText())
+        .title(post.getTitle())
+        .user(user)
+        .build();
     return postId;
   }
 
@@ -79,13 +81,7 @@ public class PostService {
     // опубликован и false если скрыт (при этом модераторы и автор поста будет его видеть)
 //    if (post.getModerationStatus() == ModerationStatus.ACCEPTED)
 //      return true;
-
     return false;
-  }
-
-  private List<String> getTagsForPostId(Integer id) {
-    List<String> list = postRepository.findTagsList(id);
-    return list;
   }
 
   private Integer getViewCounts(UserDTOForPost user, Post post) {
@@ -101,39 +97,39 @@ public class PostService {
     return viewCounts;
   }
 
+  public PostResponse getSearchPostQuery(int offset, int limit, String query) {
+    if (query.isEmpty()) {
+      getAllPosts(PostMode.RECENT, offset, limit);
+    }
+    PostResponse postResponse = new PostResponse();
+    List<Post> allPostsListQuery = postRepository.findAllByQuery(query);
+    List<PostDTO> postDtoList = preparePost(allPostsListQuery);
+    postDtoList = getCollectionsByOffsetLimit(offset, limit, postDtoList);
+    postResponse.setPostsDTO(postDtoList);
+    postResponse.setCount(allPostsListQuery.size());
+    return postResponse;
+  }
+
   private List<CommentDTO> getCommentsForPostId(Integer id) {
     List<CommentDTO> comments = new ArrayList<>();
     List<PostComment> postComment = postCommentRepository.findCommentsForPostId(id);
-//    Map<Integer, List<CommentDTO>> commentsWithParent = new HashMap<>();
     for (PostComment comment : postComment) {
-//      Integer i = comment.getParentId();
-      CommentDTO commentDTO = mapperDTO.PostCommentToPostDTO(comment);
       Duration duration = Duration.between(comment.getRegTime(), LocalDateTime.now());
       long secondsAfterCreatePost = (System.currentTimeMillis() / 1000L) - duration.getSeconds();
-      commentDTO.setTimestamp(secondsAfterCreatePost);
-      UserDTOForPostId user = mapperDTO.UserToUserDTOForPostId(comment.getUser());
-      commentDTO.setUser(user);
-//      if (i == null) {
-        comments.add(commentDTO);
-//      } else {
-//        List<CommentDTO> target = commentsWithParent.get(i);
-//
-//        if(target == null)
-//        {
-//          target = new ArrayList<>();
-//          commentsWithParent.put(i,target);
-//        }
-//        target.add(commentDTO);
-//        commentsWithParent.put(i, target);
-//      }
-//    }
-   comments.sort(Collections.reverseOrder(COMPARE_BY_REG_TIME));
-//    for (Map.Entry<Integer,  List<CommentDTO>> entry : commentsWithParent.entrySet()) {
-//      for (CommentDTO commentDTO : comments) {
-//        if (commentDTO.getId() == entry.getKey()) {
-//          commentDTO.setListOfParent(entry.getValue());
-//        }
-//      }
+      User user = comment.getUser();
+      UserDTOForPostId userDTOForPostId = UserDTOForPostId.builder()
+          .id(user.getId())
+          .name(user.getName())
+          .photo(user.getPhoto())
+          .build();
+      CommentDTO commentDTO = CommentDTO.builder()
+          .id(comment.getId())
+          .text(comment.getText())
+          .timestamp(secondsAfterCreatePost)
+          .user(userDTOForPostId)
+          .build();
+      comments.add(commentDTO);
+      comments.sort(Collections.reverseOrder(COMPARE_BY_REG_TIME));
     }
     return comments;
   }
@@ -141,40 +137,23 @@ public class PostService {
   private List<PostDTO> preparePost(List<Post> posts) {
     List<PostDTO> result = new ArrayList<>();
     for (Post post : posts) {
-      PostDTO postDto = mapperDTO.PostToPostDto(post);
+      UserDTOForPost userDTOForPost = UserDTOForPost.builder()
+          .id(post.getUser().getId())
+          .name(post.getUser().getName())
+          .build();
+      PostDTO postDto = PostDTO.builder()
+          .id(post.getId())
+          .title(post.getTitle())
+          .viewCount(post.getViewCount())
+          .user(userDTOForPost)
+          .commentCount(post.getComments().size())
+          .build();
       setPostAnnounce(post, postDto);
       setPostDtoVotesCount(post, postDto);
-      setPostCommentsCount(post, postDto);
       setPostTimestamp(post, postDto);
       result.add(postDto);
     }
     return result;
-  }
-
-  public PostResponse getByDate(String date, int offset, int limit) {
-    PostResponse postResponse = new PostResponse();
-    DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    LocalDate localDate = LocalDate.parse(date, newFormatter);
-    List<Post> allPostsListWithDate = postRepository.findByDate(localDate);
-    List<PostDTO> postDtoList = preparePost(allPostsListWithDate);
-    postDtoList = getCollectionsByOffsetLimit(offset, limit, postDtoList);
-    postResponse.setPostsDTO(postDtoList);
-    postResponse.setCount(allPostsListWithDate.size());
-    return postResponse;
-  }
-
-  public PostResponse getByTag(String tag, int offset, int limit) {
-    PostResponse postResponse = new PostResponse();
-    List<Post> allPostsListWithTag = postRepository.findByTag(tag);
-    List<PostDTO> postDtoList = preparePost(allPostsListWithTag);
-    postDtoList = getCollectionsByOffsetLimit(offset, limit, postDtoList);
-    postResponse.setPostsDTO(postDtoList);
-    postResponse.setCount(allPostsListWithTag.size());
-    return postResponse;
-  }
-
-  private void setPostCommentsCount(Post post, PostDTO postDTO) {
-    postDTO.setCommentCount(post.getComments().size());
   }
 
   private void setPostAnnounce(Post post, PostDTO postDto) {
@@ -201,6 +180,28 @@ public class PostService {
     Duration duration = Duration.between(post.getTime(), LocalDateTime.now());
     long secondsAfterCreatePost = (System.currentTimeMillis() / 1000L) - duration.getSeconds();
     postDto.setTimestamp(secondsAfterCreatePost);
+  }
+
+  public PostResponse getByDate(String date, int offset, int limit) {
+    PostResponse postResponse = new PostResponse();
+    DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    LocalDate localDate = LocalDate.parse(date, newFormatter);
+    List<Post> allPostsListWithDate = postRepository.findByDate(localDate);
+    List<PostDTO> postDtoList = preparePost(allPostsListWithDate);
+    postDtoList = getCollectionsByOffsetLimit(offset, limit, postDtoList);
+    postResponse.setPostsDTO(postDtoList);
+    postResponse.setCount(allPostsListWithDate.size());
+    return postResponse;
+  }
+
+  public PostResponse getByTag(String tag, int offset, int limit) {
+    PostResponse postResponse = new PostResponse();
+    List<Post> allPostsListWithTag = postRepository.findByTag(tag);
+    List<PostDTO> postDtoList = preparePost(allPostsListWithTag);
+    postDtoList = getCollectionsByOffsetLimit(offset, limit, postDtoList);
+    postResponse.setPostsDTO(postDtoList);
+    postResponse.setCount(allPostsListWithTag.size());
+    return postResponse;
   }
 
   private void sortCollection(PostMode mode, List<PostDTO> postDtoList) {

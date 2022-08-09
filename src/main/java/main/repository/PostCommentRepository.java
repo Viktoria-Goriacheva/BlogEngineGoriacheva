@@ -7,8 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface PostCommentRepository extends JpaRepository<PostComment, Integer> {
 
-  @Query(value = "select id,parent_id,reg_time,text,user_id "
-      + "from post_comments "
-      + "where post_id = :id",nativeQuery = true)
+  @Query(value = "select * from post_comments "
+      + "where post_id = :id", nativeQuery = true)
   List<PostComment> findCommentsForPostId(Integer id);
 }

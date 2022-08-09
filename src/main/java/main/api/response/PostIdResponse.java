@@ -1,20 +1,21 @@
 package main.api.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import main.dto.CommentDTO;
 import main.dto.UserDTOForPost;
-import main.dto.UserDTOForPostId;
-import main.model.Tag;
 import org.springframework.stereotype.Component;
 
+@Builder
 @Component
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostIdResponse {
   private Integer id;
   private Long timestamp;
@@ -25,10 +26,7 @@ public class PostIdResponse {
   private Integer likeCount;
   private Integer dislikeCount;
   private Integer viewCount;
-  @JsonProperty("comments")
   private List<CommentDTO> comments;
   private List<String> tags;
-
-
 
 }

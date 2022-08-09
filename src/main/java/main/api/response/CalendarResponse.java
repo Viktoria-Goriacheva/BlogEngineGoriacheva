@@ -1,7 +1,6 @@
 package main.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.Map;
 import java.util.Set;
 import lombok.Data;

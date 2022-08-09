@@ -1,14 +1,14 @@
 package main.repository;
+
 import java.time.LocalDate;
 import java.util.List;
 import main.model.Post;
-import main.model.Tag;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PostRepository extends PagingAndSortingRepository<Post, Integer> {
+public interface PostRepository extends JpaRepository<Post, Integer> {
 
   @Query(value = "SELECT * FROM posts WHERE is_active = 1 AND moderation_status = 'ACCEPTED' AND time <= NOW()", nativeQuery = true)
   List<Post> findAllPost();
@@ -36,6 +36,9 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
 
   @Query(value = "SELECT * FROM posts WHERE id= :id AND is_active = 1 AND moderation_status = 'ACCEPTED' AND time <= NOW()", nativeQuery = true)
   Post findByIdPost(Integer id);
+
+  @Query(value = "SELECT * FROM posts WHERE LOWER(title) LIKE LOWER(CONCAT('%',?1,'%'))  AND is_active = 1 AND moderation_status = 'ACCEPTED' AND time <= NOW()", nativeQuery = true)
+  List<Post> findAllByQuery(String path);
 
   @Query(value = "SELECT tags.name "
       + "FROM posts "

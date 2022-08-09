@@ -48,6 +48,15 @@ public class ApiPostController {
     return ResponseEntity.ok(postService.getByTag(tag, offset, limit));
   }
 
+  @GetMapping("/search")
+  public ResponseEntity<PostResponse> getPostQuery(
+      @RequestParam(required = false, defaultValue = "0") int offset,
+      @RequestParam(required = false, defaultValue = "10") int limit,
+      @RequestParam(value = "query") String query) {
+
+    return ResponseEntity.ok(postService.getSearchPostQuery(offset, limit, query));
+  }
+
   @GetMapping("/{ID}")
   public ResponseEntity<PostIdResponse> getPostWithId(@PathVariable Integer ID) {
     return (postRepository.existsById(ID)) ?
