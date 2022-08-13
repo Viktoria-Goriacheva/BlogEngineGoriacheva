@@ -2,19 +2,21 @@ package main.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import main.dto.PostDTO;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Component
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PostResponse {
+public class CaptchaResponse {
 
-  private Integer count;
-  @JsonProperty("posts")
-  private List<PostDTO> postsDTO;
+  @JsonProperty("secret")
+  private String secretCode;
+
+  @JsonProperty("image")
+  private String imageBase64;
 }

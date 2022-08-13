@@ -2,17 +2,16 @@ package main.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Map;
-import java.util.Set;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @Data
-@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CalendarResponse {
+public class RegisterResponse {
 
-  private Set<Integer> years;
-  private Map<String, Long> posts;
+  private boolean result;
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private Map<String, String> errors;
+
 }

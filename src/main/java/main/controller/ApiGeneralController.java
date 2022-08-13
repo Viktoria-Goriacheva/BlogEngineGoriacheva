@@ -44,8 +44,8 @@ public class ApiGeneralController {
 
   @GetMapping("/calendar")
   private ResponseEntity<CalendarResponse> calendar(
-      @RequestParam(required = false, defaultValue = "0") String year) {
-    return (year.equals("0")) ? ResponseEntity.ok(
+      @RequestParam(required = false, defaultValue = "") String year) {
+    return (year.isEmpty()) ? ResponseEntity.ok(
         calendarService.calendar(String.valueOf(LocalDateTime.now().getYear())))
         : ResponseEntity.ok(calendarService.calendar(year));
   }
