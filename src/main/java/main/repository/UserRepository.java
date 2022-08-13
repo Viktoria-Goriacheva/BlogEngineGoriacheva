@@ -1,5 +1,6 @@
 package main.repository;
 
+import java.util.Optional;
 import main.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,4 +15,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
   @Query(value = "SELECT * FROM users where users.id=:id ", nativeQuery = true)
   User findByIdUserId(Integer id);
+  @Query(value = "SELECT * FROM users where users.email=:email ", nativeQuery = true)
+  Optional<User> findByEmailUser(String email);
 }
