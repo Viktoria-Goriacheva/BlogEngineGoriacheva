@@ -50,4 +50,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
       + "FROM posts "
       + "WHERE posts.id =:id AND posts.is_active = 1 AND posts.moderation_status = 'ACCEPTED' AND posts.time <= NOW()", nativeQuery = true)
   Integer findIdUser(Integer id);
+
+  @Query(value = "SELECT * FROM posts WHERE moderation_status = 'NEW'", nativeQuery = true)
+  List<Post> findModerationPosts();
 }

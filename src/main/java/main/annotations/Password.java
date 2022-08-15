@@ -1,16 +1,16 @@
-package main.api.annotations;
+package main.annotations;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = NameValidator.class)
+@Constraint(validatedBy = PasswordValidator.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Name {
+public @interface Password {
 
-  String message() default "Имя указано неверно";
+  String message() default "Пароль короче 6-ти символов";
 
   Class<?>[] groups() default {};
 

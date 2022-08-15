@@ -3,9 +3,9 @@ package main.api.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import main.api.annotations.Email;
-import main.api.annotations.Name;
-import main.api.annotations.Password;
+import main.annotations.Email;
+import main.annotations.Name;
+import main.annotations.Password;
 import org.springframework.stereotype.Component;
 
 @Data
