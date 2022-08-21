@@ -1,6 +1,6 @@
 package main.repository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import main.model.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
-  @Query(value = "SELECT * FROM posts WHERE is_active = 1 AND moderation_status = 'ACCEPTED' AND time <= NOW()", nativeQuery = true)
+  @Query("FROM Post WHERE isActive = 1 AND moderationStatus = 'ACCEPTED' AND time <= NOW()")
   List<Post> findAllPost();
 
-  @Query(value = "SELECT * FROM posts WHERE time= :date AND is_active = 1 AND moderation_status = 'ACCEPTED' AND time <= NOW()", nativeQuery = true)
-  List<Post> findByDate(LocalDate date);
+  @Query("FROM Post WHERE time= :date AND isActive = 1 AND moderationStatus = 'ACCEPTED' AND time <= NOW()")
+  List<Post> findByDate(LocalDateTime date);
 
   @Query(value = "SELECT "
       + "    posts.id, "
@@ -25,8 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
       + "    posts.time, "
       + "    posts.title, "
       + "    posts.view_count, "
-      + " posts.user_id, "
-      + " tags.name "
+      + " posts.user_id "
       + "FROM "
       + "    posts "
       + "INNER JOIN tag2post ON tag2post.post_id =posts.id "
@@ -34,31 +33,27 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
       + "where tags.name = :tag AND posts.is_active = 1 AND posts.moderation_status = 'ACCEPTED' AND posts.time <= NOW()", nativeQuery = true)
   List<Post> findByTag(String tag);
 
-  @Query(value = "SELECT * FROM posts WHERE id= :id AND is_active = 1 AND moderation_status = 'ACCEPTED' AND time <= NOW()", nativeQuery = true)
+  @Query("FROM Post WHERE id= :id AND isActive = 1 AND moderationStatus = 'ACCEPTED' AND time <= NOW()")
   Post findByIdPost(Integer id);
 
-  @Query(value = "SELECT * FROM posts WHERE LOWER(title) LIKE LOWER(CONCAT('%',?1,'%'))  AND is_active = 1 AND moderation_status = 'ACCEPTED' AND time <= NOW()", nativeQuery = true)
+  @Query("FROM Post WHERE LOWER(title) LIKE LOWER(CONCAT('%',?1,'%'))  AND isActive = 1 AND moderationStatus = 'ACCEPTED' AND time <= NOW()")
   List<Post> findAllByQuery(String path);
 
-  @Query(value = "SELECT tags.name "
-      + "FROM posts "
-      + "INNER JOIN tag2post ON tag2post.post_id =posts.id "
-      + "INNER JOIN tags ON tag2post.tag_id = tags.id where posts.id =:id AND posts.is_active = 1 AND posts.moderation_status = 'ACCEPTED' AND posts.time <= NOW()", nativeQuery = true)
-  List<String> findTagsList(Integer id);
-
-  @Query(value = "SELECT user_id "
-      + "FROM posts "
-      + "WHERE posts.id =:id AND posts.is_active = 1 AND posts.moderation_status = 'ACCEPTED' AND posts.time <= NOW()", nativeQuery = true)
+  @Query("SELECT user.id FROM Post p WHERE p.id =:id AND p.isActive = 1 AND p.moderationStatus = 'ACCEPTED' AND p.time <= NOW()")
   Integer findIdUser(Integer id);
 
-  @Query(value = "SELECT * FROM posts WHERE moderation_status = 'NEW'", nativeQuery = true)
+  @Query("FROM Post WHERE moderationStatus = 'NEW'")
   List<Post> findModerationPosts();
-  @Query(value = "SELECT * FROM posts INNER JOIN users ON users.id =posts.user_id WHERE users.email = :email and posts.is_active = 0", nativeQuery = true)
+
+  @Query("FROM Post p INNER JOIN User u ON u.id =p.user WHERE u.email = :email and p.isActive = 0")
   List<Post> findByInactive(String email);
-  @Query(value = "SELECT * FROM posts INNER JOIN users ON users.id =posts.user_id WHERE users.email = :email and posts.is_active = 1 and posts.moderation_status = 'NEW'", nativeQuery = true)
+
+  @Query("FROM Post p INNER JOIN User u ON u.id =p.user WHERE u.email = :email and p.isActive = 1 and p.moderationStatus = 'NEW'")
   List<Post> findByPending(String email);
-  @Query(value = "SELECT * FROM posts INNER JOIN users ON users.id =posts.user_id WHERE users.email = :email and posts.is_active = 1 and posts.moderation_status = 'DECLINED'", nativeQuery = true)
+
+  @Query("FROM Post p INNER JOIN User u ON u.id =p.user WHERE u.email = :email and p.isActive = 1 and p.moderationStatus = 'DECLINED'")
   List<Post> findByDeclined(String email);
-  @Query(value = "SELECT * FROM posts INNER JOIN users ON users.id =posts.user_id WHERE users.email = :email and posts.is_active = 1 and posts.moderation_status = 'ACCEPTED'", nativeQuery = true)
+
+  @Query("FROM Post p INNER JOIN User u ON u.id =p.user WHERE u.email = :email and p.isActive = 1 and p.moderationStatus = 'ACCEPTED'")
   List<Post> findByPublished(String email);
 }

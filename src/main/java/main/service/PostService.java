@@ -19,6 +19,7 @@ import main.model.Post;
 import main.model.PostComment;
 import main.model.PostStatus;
 import main.model.PostVote;
+import main.model.Tag;
 import main.model.User;
 import main.repository.PostCommentRepository;
 import main.repository.PostRepository;
@@ -60,7 +61,11 @@ public class PostService {
     }
     Duration duration = Duration.between(post.getTime(), LocalDateTime.now());
     long secondsAfterCreatePost = (System.currentTimeMillis() / 1000L) - duration.getSeconds();
-    List<String> list = postRepository.findTagsList(id);
+    List<String> list = new ArrayList<>();
+    List<Tag> tags = post.getTags();
+    for (Tag tag : tags) {
+      list.add(tag.getName());
+    }
     User userDTO = userRepository.findByIdUserForPostId(postRepository.findIdUser(id));
     UserDTOForPost user = UserDTOForPost.builder().id(userDTO.getId()).name(userDTO.getName())
         .build();
@@ -193,7 +198,9 @@ public class PostService {
 
   private void setPostAnnounce(Post post, PostDTO postDto) {
     int limit = 150;
-    String text = (post.getText().length() > limit) ? post.getText().concat("...") : post.getText();
+    String text =
+        (post.getText().length() > limit) ? post.getText().substring(0, limit).concat("...")
+            : post.getText();
     postDto.setAnnounce(text);
   }
 
@@ -220,7 +227,7 @@ public class PostService {
   public PostResponse getByDate(String date, int offset, int limit) {
     PostResponse postResponse = new PostResponse();
     DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    LocalDate localDate = LocalDate.parse(date, newFormatter);
+    LocalDateTime localDate = LocalDate.parse(date, newFormatter).atStartOfDay();
     List<Post> allPostsListWithDate = postRepository.findByDate(localDate);
     List<PostDTO> postDtoList = preparePost(allPostsListWithDate);
     postDtoList = getCollectionsByOffsetLimit(offset, limit, postDtoList);
