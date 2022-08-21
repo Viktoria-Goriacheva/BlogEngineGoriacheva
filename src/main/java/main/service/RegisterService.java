@@ -10,6 +10,7 @@ import main.api.response.RegisterResponse;
 import main.model.User;
 import main.repository.CaptchaCodeRepository;
 import main.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -37,9 +38,14 @@ public class RegisterService {
   }
 
   private void addUserInDB(String email, String password, String name) {
-    User user = User.builder().email(email).name(name).password(password).isModerator((byte) 0)
-        .regTime(
-            LocalDateTime.now()).build();
+    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+    User user = User.builder()
+        .email(email)
+        .name(name)
+        .password(passwordEncoder.encode(password))
+        .isModerator((byte) 0)
+        .regTime(LocalDateTime.now())
+        .build();
     userRepository.save(user);
   }
 
@@ -62,7 +68,7 @@ public class RegisterService {
   }
 
   private void checkEmail(String email, Map<String, String> result) {
-    if (userRepository.findByEmailUser(email.trim()).isPresent()) {
+    if (userRepository.findByEmail(email.trim()).isPresent()) {
       result.put("email", "Такая почта уже зарегистрирована");
     }
   }

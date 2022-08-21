@@ -22,7 +22,7 @@ public class Post {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
   @NotNull
-  @Column(name = "is_active", nullable = false)
+  @Column(name = "is_active")
   private byte isActive;
   @Column(name = "moderation_status", nullable = false)
   @Enumerated(EnumType.STRING)

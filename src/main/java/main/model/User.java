@@ -13,11 +13,10 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
+import main.repository.Role;
 
 @Getter
 @Setter
@@ -50,5 +49,9 @@ public class User {
   private List<PostVote> postVotes;
   @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
   private List<PostComment> comments;
+
+  public Role getRole() {
+    return isModerator == 1 ? Role.MODERATOR : Role.USER;
+  }
 
 }

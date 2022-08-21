@@ -1,16 +1,16 @@
-package main.api.annotations;
+package main.annotations;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = PasswordValidator.class)
-@Target(ElementType.FIELD)
+@Constraint(validatedBy = EmailValidator.class)
+@Target(value = ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Password {
+public @interface Email {
 
-  String message() default "Пароль короче 6-ти символов";
+  String message() default "Неверный формат введённого e-mail";
 
   Class<?>[] groups() default {};
 

@@ -1,16 +1,16 @@
-package main.api.annotations;
+package main.annotations;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = EmailValidator.class)
-@Target(value = ElementType.FIELD)
+@Constraint(validatedBy = NameValidator.class)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Email {
+public @interface Name {
 
-  String message() default "Неверный формат введённого e-mail";
+  String message() default "Имя указано неверно";
 
   Class<?>[] groups() default {};
 

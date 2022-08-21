@@ -17,11 +17,16 @@ import main.dto.UserDTOForPost;
 import main.dto.UserDTOForPostId;
 import main.model.Post;
 import main.model.PostComment;
+import main.model.PostStatus;
 import main.model.PostVote;
+import main.model.Tag;
 import main.model.User;
 import main.repository.PostCommentRepository;
 import main.repository.PostRepository;
 import main.repository.UserRepository;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -56,7 +61,11 @@ public class PostService {
     }
     Duration duration = Duration.between(post.getTime(), LocalDateTime.now());
     long secondsAfterCreatePost = (System.currentTimeMillis() / 1000L) - duration.getSeconds();
-    List<String> list = postRepository.findTagsList(id);
+    List<String> list = new ArrayList<>();
+    List<Tag> tags = post.getTags();
+    for (Tag tag : tags) {
+      list.add(tag.getName());
+    }
     User userDTO = userRepository.findByIdUserForPostId(postRepository.findIdUser(id));
     UserDTOForPost user = UserDTOForPost.builder().id(userDTO.getId()).name(userDTO.getName())
         .build();
@@ -67,7 +76,7 @@ public class PostService {
         .comments(getCommentsForPostId(id))
         .likeCount(like)
         .dislikeCount(dislike)
-        .viewCount(getViewCounts(user, post))
+        .viewCount(getViewCounts(post))
         .tags(list)
         .text(post.getText())
         .title(post.getTitle())
@@ -77,24 +86,55 @@ public class PostService {
   }
 
   private boolean getActive(Post post) {
-    //Параметр active в ответе используется админ частью фронта, должно быть значение true если пост
-    // опубликован и false если скрыт (при этом модераторы и автор поста будет его видеть)
-//    if (post.getModerationStatus() == ModerationStatus.ACCEPTED)
-//      return true;
+    if (post.getIsActive() == 1) {
+      return true;
+    }
     return false;
   }
 
-  private Integer getViewCounts(UserDTOForPost user, Post post) {
-    //доработать после авторизации Если модератор авторизован, то не считаем его просмотры вообще
-    //Если автор авторизован, то не считаем просмотры своих же публикаций
-//   int viewCounts = post.getViewCount();
-//    byte moderator = userRepository.findByIdUserId(user.getId()).getIsModerator();
-//    if (moderator == 0) {
-    int viewCounts = post.getViewCount() + 1;
+  private Integer getViewCounts(Post post) {
+    int viewCounts = post.getViewCount();
+    User userAuthorPost = post.getUser();
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)
+        && authentication.isAuthenticated()) {
+      String emailAuthUser = SecurityContextHolder.getContext().getAuthentication().getName();
+      User userAuth = userRepository.findByEmail(emailAuthUser).orElseThrow();
+      if (userAuth.getIsModerator() == 1 || emailAuthUser.equals(userAuthorPost.getEmail())) {
+        return viewCounts;
+      }
+    }
+    viewCounts++;
     post.setViewCount(viewCounts);
-//     postRepository.save(post);
-//    }
+    postRepository.save(post);
     return viewCounts;
+  }
+
+  public PostResponse getMyPosts(int offset, int limit, PostStatus status) {
+    PostResponse postResponse = new PostResponse();
+    List<Post> allMyPosts = new ArrayList<>();
+    String emailAuthUser = SecurityContextHolder.getContext().getAuthentication().getName();
+    switch (status) {
+      case INACTIVE:
+        allMyPosts = postRepository.findByInactive(emailAuthUser);
+        break;
+      case PENDING:
+        allMyPosts = postRepository.findByPending(emailAuthUser);
+        break;
+      case DECLINED:
+        allMyPosts = postRepository.findByDeclined(emailAuthUser);
+        break;
+      case PUBLISHED:
+        allMyPosts = postRepository.findByPublished(emailAuthUser);
+        break;
+      default:
+        break;
+    }
+    List<PostDTO> postDtoList = preparePost(allMyPosts);
+    postDtoList = getCollectionsByOffsetLimit(offset, limit, postDtoList);
+    postResponse.setPostsDTO(postDtoList);
+    postResponse.setCount(allMyPosts.size());
+    return postResponse;
   }
 
   public PostResponse getSearchPostQuery(int offset, int limit, String query) {
@@ -158,7 +198,9 @@ public class PostService {
 
   private void setPostAnnounce(Post post, PostDTO postDto) {
     int limit = 150;
-    String text = (post.getText().length() > limit) ? post.getText().concat("...") : post.getText();
+    String text =
+        (post.getText().length() > limit) ? post.getText().substring(0, limit).concat("...")
+            : post.getText();
     postDto.setAnnounce(text);
   }
 
@@ -185,7 +227,7 @@ public class PostService {
   public PostResponse getByDate(String date, int offset, int limit) {
     PostResponse postResponse = new PostResponse();
     DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    LocalDate localDate = LocalDate.parse(date, newFormatter);
+    LocalDateTime localDate = LocalDate.parse(date, newFormatter).atStartOfDay();
     List<Post> allPostsListWithDate = postRepository.findByDate(localDate);
     List<PostDTO> postDtoList = preparePost(allPostsListWithDate);
     postDtoList = getCollectionsByOffsetLimit(offset, limit, postDtoList);
