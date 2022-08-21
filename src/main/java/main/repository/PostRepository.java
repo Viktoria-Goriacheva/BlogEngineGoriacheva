@@ -53,4 +53,12 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
   @Query(value = "SELECT * FROM posts WHERE moderation_status = 'NEW'", nativeQuery = true)
   List<Post> findModerationPosts();
+  @Query(value = "SELECT * FROM posts INNER JOIN users ON users.id =posts.user_id WHERE users.email = :email and posts.is_active = 0", nativeQuery = true)
+  List<Post> findByInactive(String email);
+  @Query(value = "SELECT * FROM posts INNER JOIN users ON users.id =posts.user_id WHERE users.email = :email and posts.is_active = 1 and posts.moderation_status = 'NEW'", nativeQuery = true)
+  List<Post> findByPending(String email);
+  @Query(value = "SELECT * FROM posts INNER JOIN users ON users.id =posts.user_id WHERE users.email = :email and posts.is_active = 1 and posts.moderation_status = 'DECLINED'", nativeQuery = true)
+  List<Post> findByDeclined(String email);
+  @Query(value = "SELECT * FROM posts INNER JOIN users ON users.id =posts.user_id WHERE users.email = :email and posts.is_active = 1 and posts.moderation_status = 'ACCEPTED'", nativeQuery = true)
+  List<Post> findByPublished(String email);
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @Component
 public class RegisterRequest {
+
   @Email
   @JsonProperty("e_mail")
   private String eMail;

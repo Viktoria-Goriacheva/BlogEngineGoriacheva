@@ -9,7 +9,6 @@ import main.dto.UserDTO;
 import main.model.User;
 import main.repository.PostRepository;
 import main.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

@@ -37,6 +37,7 @@ public class ApiAuthController {
   public ResponseEntity<LoginResponse> check(Principal principal) {
     return ResponseEntity.ok(loginService.checkUser(principal));
   }
+
   @GetMapping("/logout")
   public ResponseEntity<LoginResponse> logout() {
     return ResponseEntity.ok(loginService.logout());
