@@ -3,11 +3,13 @@ package main.controller;
 import lombok.RequiredArgsConstructor;
 import main.api.response.PostIdResponse;
 import main.api.response.PostResponse;
+import main.model.ModerationStatus;
 import main.model.PostStatus;
 import main.repository.PostRepository;
 import main.service.PostMode;
 import main.service.PostService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,6 +73,16 @@ public class ApiPostController{
       @RequestParam (value = "status") PostStatus status) {
 
     return ResponseEntity.ok(postService.getMyPosts(offset, limit, status));
+  }
+
+  @GetMapping("/moderation")
+  @PreAuthorize("hasAuthority('user:moderate')")
+  public ResponseEntity<PostResponse> getPostForModeration(
+      @RequestParam(value = "status") ModerationStatus status,
+      @RequestParam(required = false, defaultValue = "0") int offset,
+      @RequestParam(required = false, defaultValue = "10") int limit) {
+
+    return ResponseEntity.ok(postService.getAllPostsForModeratoin(status, offset, limit));
   }
 }
 

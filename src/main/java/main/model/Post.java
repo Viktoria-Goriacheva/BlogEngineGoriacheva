@@ -20,7 +20,7 @@ public class Post {
   @Id
   @NotNull
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Integer id;
   @NotNull
   @Column(name = "is_active")
   private byte isActive;
@@ -28,7 +28,7 @@ public class Post {
   @Enumerated(EnumType.STRING)
   private ModerationStatus moderationStatus;
   @Column(name = "moderator_id")
-  private int moderatorId;
+  private Integer moderatorId;
   @NotNull
   private LocalDateTime time;
   @NotNull

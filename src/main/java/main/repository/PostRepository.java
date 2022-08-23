@@ -42,9 +42,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
   @Query("SELECT user.id FROM Post p WHERE p.id =:id AND p.isActive = 1 AND p.moderationStatus = 'ACCEPTED' AND p.time <= NOW()")
   Integer findIdUser(Integer id);
 
-  @Query("FROM Post WHERE moderationStatus = 'NEW'")
-  List<Post> findModerationPosts();
-
   @Query("FROM Post p INNER JOIN User u ON u.id =p.user WHERE u.email = :email and p.isActive = 0")
   List<Post> findByInactive(String email);
 
@@ -56,4 +53,16 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
   @Query("FROM Post p INNER JOIN User u ON u.id =p.user WHERE u.email = :email and p.isActive = 1 and p.moderationStatus = 'ACCEPTED'")
   List<Post> findByPublished(String email);
+
+  @Query("FROM Post WHERE (moderatorId = :moderatorId or moderatorId is null) and isActive = 1 and moderationStatus = 'NEW'")
+  List<Post> findByPendingMod(Integer moderatorId);
+
+  @Query("FROM Post WHERE (moderatorId = :moderatorId or moderatorId is null) and isActive = 1 and moderationStatus = 'DECLINED'")
+  List<Post> findByDeclinedMod(Integer moderatorId);
+
+  @Query("FROM Post WHERE (moderatorId = :moderatorId or moderatorId is null) and isActive = 1 and moderationStatus = 'ACCEPTED'")
+  List<Post> findByPublishedMod(Integer moderatorId);
+
+  @Query(value = "FROM Post WHERE moderationStatus = 'NEW'")
+  List<Post> findModerationPosts();
 }

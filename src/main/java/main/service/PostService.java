@@ -15,6 +15,7 @@ import main.dto.CommentDTO;
 import main.dto.PostDTO;
 import main.dto.UserDTOForPost;
 import main.dto.UserDTOForPostId;
+import main.model.ModerationStatus;
 import main.model.Post;
 import main.model.PostComment;
 import main.model.PostStatus;
@@ -46,6 +47,29 @@ public class PostService {
     postResponse.setPostsDTO(postDtoList);
     postResponse.setCount(allPostsList.size());
     return postResponse;
+  }
+
+  public PostResponse getAllPostsForModeratoin(ModerationStatus status, int offset, int limit) {
+    PostResponse response = new PostResponse();
+    List<Post> allPosts = new ArrayList<>();
+    String email = SecurityContextHolder.getContext().getAuthentication().getName();
+    Integer moderatorId = userRepository.findByIdUserForMod(email);
+    switch (status) {
+      case NEW:
+        allPosts = postRepository.findByPendingMod(moderatorId);
+        break;
+      case DECLINED:
+        allPosts = postRepository.findByDeclinedMod(moderatorId);
+        break;
+      case ACCEPTED:
+        allPosts = postRepository.findByPublishedMod(moderatorId);
+        break;
+    }
+    List<PostDTO> postDtoList = preparePost(allPosts);
+    postDtoList = getCollectionsByOffsetLimit(offset, limit, postDtoList);
+    response.setPostsDTO(postDtoList);
+    response.setCount(postDtoList.size());
+    return response;
   }
 
   public PostIdResponse getPostId(Integer id) {
