@@ -1,18 +1,19 @@
 package main.model;
 
 import java.io.Serializable;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 @NoArgsConstructor
 @Getter
 @Setter
@@ -23,10 +24,18 @@ import lombok.ToString;
 public class Tag2Post implements Serializable {
 
   @Id
-  @NotNull
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
-  @EmbeddedId
-  private Key key;
+  private Integer id;
+  @ManyToOne
+  @JoinColumn(name = "post_id")
+  private Post postId;
+  @ManyToOne
+  @JoinColumn(name = "tag_id")
+  private Tag tagId;
 
+
+  public Tag2Post(Post postId, Tag tagId) {
+    this.postId = postId;
+    this.tagId = tagId;
+  }
 }

@@ -7,7 +7,7 @@ import main.api.request.LoginRequest;
 import main.api.request.RegisterRequest;
 import main.api.response.CaptchaResponse;
 import main.api.response.LoginResponse;
-import main.api.response.RegisterResponse;
+import main.api.response.StatusResponse;
 import main.service.CaptchaService;
 import main.service.LoginService;
 import main.service.RegisterService;
@@ -49,7 +49,7 @@ public class ApiAuthController {
   }
 
   @PostMapping("/register")
-  public ResponseEntity<RegisterResponse> getRegister(@Valid @RequestBody RegisterRequest user,
+  public ResponseEntity<StatusResponse> getRegister(@Valid @RequestBody RegisterRequest user,
       BindingResult bindingResult) {
     if (bindingResult.hasErrors()) {
       return ResponseEntity.ok(registerService.getRegisterWithErrors(bindingResult.getAllErrors()));

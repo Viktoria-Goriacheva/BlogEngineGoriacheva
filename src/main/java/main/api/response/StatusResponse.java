@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RegisterResponse {
+public class StatusResponse {
 
   private boolean result;
   @JsonInclude(JsonInclude.Include.NON_NULL)

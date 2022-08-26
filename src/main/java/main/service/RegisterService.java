@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import lombok.RequiredArgsConstructor;
-import main.api.response.RegisterResponse;
+import main.api.response.StatusResponse;
 import main.model.User;
 import main.repository.CaptchaCodeRepository;
 import main.repository.UserRepository;
@@ -22,19 +22,19 @@ public class RegisterService {
   private final CaptchaCodeRepository captchaCodeRepository;
   private final UserRepository userRepository;
 
-  public RegisterResponse addNewUser(String email, String password, String name,
+  public StatusResponse addNewUser(String email, String password, String name,
       String captcha, String secret) {
-    RegisterResponse registerResponse = new RegisterResponse();
+    StatusResponse statusResponse = new StatusResponse();
     Map<String, String> errors = checkInputData(email, captcha, secret);
     if (errors.isEmpty()) {
-      registerResponse.setResult(true);
-      registerResponse.setErrors(null);
+      statusResponse.setResult(true);
+      statusResponse.setErrors(null);
       addUserInDB(email, password, name);
-      return registerResponse;
+      return statusResponse;
     }
-    registerResponse.setErrors(errors);
-    registerResponse.setResult(false);
-    return registerResponse;
+    statusResponse.setErrors(errors);
+    statusResponse.setResult(false);
+    return statusResponse;
   }
 
   private void addUserInDB(String email, String password, String name) {
@@ -73,8 +73,8 @@ public class RegisterService {
     }
   }
 
-  public RegisterResponse getRegisterWithErrors(List<ObjectError> listErrors) {
-    RegisterResponse response = new RegisterResponse();
+  public StatusResponse getRegisterWithErrors(List<ObjectError> listErrors) {
+    StatusResponse response = new StatusResponse();
     Map<String, String> errors = new HashMap<>();
     listErrors.forEach((error -> {
       String fieldName = ((FieldError) error).getField();
