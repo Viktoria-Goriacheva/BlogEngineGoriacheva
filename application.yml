@@ -14,11 +14,23 @@ spring:
       charset : UTF-8
       enabled : true
       force : true
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    username: grumblaa@gmail.com
+    password: hcydchtefkirqydg
+    port: 587
+    protocol: smtp
+    tls: true
+    properties.mail.smtp:
+        auth: true
+        starttls.enable: true
+        ssl.trust: smtp.gmail.com
+
 server:
   port : 8888
   tomcat:
     uri-encoding: UTF-8
-
 blog:
   title : DevPub
   subtitle : Рассказы разработчиков
@@ -26,3 +38,5 @@ blog:
   email : grumblya@mail.ru
   copyright : Виктория Горячева
   copyrightFrom : 2005
+upload:
+  path: upload

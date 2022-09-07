@@ -1,15 +1,20 @@
 package main.controller;
 
+import java.net.MalformedURLException;
 import java.security.Principal;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import main.api.request.LoginRequest;
 import main.api.request.RegisterRequest;
+import main.api.request.RestoreRequest;
 import main.api.response.CaptchaResponse;
 import main.api.response.LoginResponse;
+import main.api.response.ModerationResponse;
 import main.api.response.StatusResponse;
 import main.service.CaptchaService;
 import main.service.LoginService;
+import main.service.PasswordService;
 import main.service.RegisterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -27,6 +32,7 @@ public class ApiAuthController {
   private final CaptchaService captchaService;
   private final RegisterService registerService;
   private final LoginService loginService;
+  private final PasswordService passwordService;
 
   @PostMapping("/login")
   public ResponseEntity<LoginResponse> getRegister(@RequestBody LoginRequest user) {
@@ -56,5 +62,10 @@ public class ApiAuthController {
     }
     return ResponseEntity.ok(registerService.addNewUser(user.getEMail(), user.getPassword(),
         user.getName(), user.getCaptcha(), user.getCaptchaSecret()));
+  }
+  @PostMapping("/restore")
+  public ResponseEntity<ModerationResponse> restorePassword( @RequestBody RestoreRequest restoreRequest, HttpServletRequest request)
+      throws MalformedURLException {
+    return ResponseEntity.ok(passwordService.changePassword(restoreRequest.getEmail(),request));
   }
 }

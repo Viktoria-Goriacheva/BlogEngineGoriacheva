@@ -1,5 +1,4 @@
 package main.api.response;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Map;
 import lombok.Getter;
@@ -12,15 +11,8 @@ import org.springframework.stereotype.Component;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StatusResponse {
-
+public class CommentResponse {
   private boolean result;
   private Map<String, String> errors;
-  private String path;
-
-  public StatusResponse(boolean result, Map<String, String> errors, String path) {
-    this.result = result;
-    this.errors = errors;
-    this.path = path;
-  }
+  private Integer id;
 }

@@ -11,4 +11,6 @@ public interface PostCommentRepository extends JpaRepository<PostComment, Intege
 
   @Query("FROM PostComment p WHERE post.id = :id")
   List<PostComment> findCommentsForPostId(Integer id);
+  @Query(value = "SELECT * FROM post_comments ORDER BY id DESC LIMIT 1", nativeQuery = true)
+  PostComment findByIdOrderByIdDesc();
 }
