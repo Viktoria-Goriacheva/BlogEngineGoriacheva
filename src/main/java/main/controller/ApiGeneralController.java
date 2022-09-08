@@ -23,9 +23,11 @@ import main.service.TagService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,8 +51,8 @@ public class ApiGeneralController {
   private final PostCommentRepository postCommentRepository;
 
   @GetMapping("/settings")
-  private SettingsResponse settings() {
-    return settingsService.getGlobalSettings();
+  private ResponseEntity<SettingsResponse> settings() {
+    return ResponseEntity.ok(settingsService.getGlobalSettings());
   }
 
   @GetMapping("/init")
@@ -99,6 +101,12 @@ public class ApiGeneralController {
       return ResponseEntity.ok(postCommentRepository.findByIdOrderByIdDesc().getId());
     }
     return new ResponseEntity<>(commentResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @PutMapping("/settings")
+  public ResponseEntity<?> saveSettings(@RequestBody SettingsResponse settingsResponse) {
+    settingsService.saveSettings(settingsResponse);
+    return new ResponseEntity(HttpStatus.OK);
   }
 }
 

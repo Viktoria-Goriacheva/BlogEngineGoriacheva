@@ -20,5 +20,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
   @Query("SELECT u.id FROM User u where email=:email")
   Integer findByIdUserForMod(String email);
 
-  User findByCode(String code);
+  Optional<User> findByCode(String code);
 }

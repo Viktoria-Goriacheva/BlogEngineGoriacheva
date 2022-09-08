@@ -5,6 +5,7 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import main.api.request.ChangePasswordRequest;
 import main.api.request.LoginRequest;
 import main.api.request.RegisterRequest;
 import main.api.request.RestoreRequest;
@@ -63,9 +64,22 @@ public class ApiAuthController {
     return ResponseEntity.ok(registerService.addNewUser(user.getEMail(), user.getPassword(),
         user.getName(), user.getCaptcha(), user.getCaptchaSecret()));
   }
+
   @PostMapping("/restore")
-  public ResponseEntity<ModerationResponse> restorePassword( @RequestBody RestoreRequest restoreRequest, HttpServletRequest request)
+  public ResponseEntity<ModerationResponse> restorePassword(
+      @RequestBody RestoreRequest restoreRequest, HttpServletRequest request)
       throws MalformedURLException {
-    return ResponseEntity.ok(passwordService.changePassword(restoreRequest.getEmail(),request));
+    return ResponseEntity.ok(passwordService.restorePassword(restoreRequest.getEmail(), request));
+  }
+
+  @PostMapping("/password")
+  public ResponseEntity<StatusResponse> changePassword(@Valid
+      @RequestBody ChangePasswordRequest changeRequest, BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+      return ResponseEntity.ok(registerService.getRegisterWithErrors(bindingResult.getAllErrors()));
+    }
+    return ResponseEntity.ok(
+        passwordService.changePassword(changeRequest.getCode(), changeRequest.getPassword(),
+            changeRequest.getCaptcha(), changeRequest.getCaptchaSecret()));
   }
 }
