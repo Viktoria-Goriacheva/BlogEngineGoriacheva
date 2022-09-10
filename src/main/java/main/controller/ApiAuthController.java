@@ -13,10 +13,13 @@ import main.api.response.CaptchaResponse;
 import main.api.response.LoginResponse;
 import main.api.response.ModerationResponse;
 import main.api.response.StatusResponse;
+import main.model.GlobalSettings;
+import main.repository.GlobalSettingsRepository;
 import main.service.CaptchaService;
 import main.service.LoginService;
 import main.service.PasswordService;
 import main.service.RegisterService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +37,7 @@ public class ApiAuthController {
   private final RegisterService registerService;
   private final LoginService loginService;
   private final PasswordService passwordService;
+  private final GlobalSettingsRepository globalSettingsRepository;
 
   @PostMapping("/login")
   public ResponseEntity<LoginResponse> getRegister(@RequestBody LoginRequest user) {
@@ -58,6 +62,10 @@ public class ApiAuthController {
   @PostMapping("/register")
   public ResponseEntity<StatusResponse> getRegister(@Valid @RequestBody RegisterRequest user,
       BindingResult bindingResult) {
+    GlobalSettings mode = globalSettingsRepository.findByCode("MULTIUSER_MODE");
+    if (mode.getValue().equals("NO")) {
+      return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    }
     if (bindingResult.hasErrors()) {
       return ResponseEntity.ok(registerService.getRegisterWithErrors(bindingResult.getAllErrors()));
     }
@@ -74,7 +82,7 @@ public class ApiAuthController {
 
   @PostMapping("/password")
   public ResponseEntity<StatusResponse> changePassword(@Valid
-      @RequestBody ChangePasswordRequest changeRequest, BindingResult bindingResult) {
+  @RequestBody ChangePasswordRequest changeRequest, BindingResult bindingResult) {
     if (bindingResult.hasErrors()) {
       return ResponseEntity.ok(registerService.getRegisterWithErrors(bindingResult.getAllErrors()));
     }

@@ -2,6 +2,8 @@ package main.controller;
 
 import lombok.RequiredArgsConstructor;
 import main.api.request.AddPostRequest;
+import main.api.request.VoteRequest;
+import main.api.response.ModerationResponse;
 import main.api.response.PostIdResponse;
 import main.api.response.PostResponse;
 import main.api.response.StatusResponse;
@@ -10,6 +12,7 @@ import main.model.PostStatus;
 import main.repository.PostRepository;
 import main.service.PostMode;
 import main.service.PostService;
+import main.service.VoteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +31,7 @@ public class ApiPostController {
 
   private final PostService postService;
   private final PostRepository postRepository;
+  private final VoteService voteService;
 
   @GetMapping
   public ResponseEntity<PostResponse> getPost(
@@ -102,6 +106,16 @@ public class ApiPostController {
       @PathVariable Integer ID) {
     return ResponseEntity.ok(postService.changePost(addPost.getTime(), addPost.getActive(),
         addPost.getTitle(), addPost.getTags(), addPost.getText(), ID));
+  }
+
+  @PostMapping("/like")
+  public ResponseEntity<ModerationResponse> setLike(@RequestBody VoteRequest voteRequest) {
+    return ResponseEntity.ok(voteService.setLike(voteRequest.getPostId()));
+  }
+
+  @PostMapping("/dislike")
+  public ResponseEntity<ModerationResponse> setDislike(@RequestBody VoteRequest voteRequest) {
+    return ResponseEntity.ok(voteService.setDislike(voteRequest.getPostId()));
   }
 }
 

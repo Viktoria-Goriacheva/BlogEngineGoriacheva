@@ -9,21 +9,27 @@ import main.api.response.CalendarResponse;
 import main.api.response.CommentResponse;
 import main.api.response.ModerationResponse;
 import main.api.response.SettingsResponse;
+import main.api.response.StatisticsResponse;
 import main.api.response.StatusResponse;
 import main.api.response.TagResponse;
 import main.dto.SiteInfoDTO;
+import main.model.GlobalSettings;
+import main.model.User;
+import main.repository.GlobalSettingsRepository;
 import main.repository.PostCommentRepository;
+import main.repository.UserRepository;
 import main.service.CalendarService;
 import main.service.CommentService;
 import main.service.ImageService;
 import main.service.ModerationService;
 import main.service.SettingsService;
 import main.service.SiteInfoService;
+import main.service.StatisticService;
 import main.service.TagService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,6 +55,9 @@ public class ApiGeneralController {
   private final ImageService imageService;
   private final CommentService commentService;
   private final PostCommentRepository postCommentRepository;
+  private final StatisticService statisticService;
+  private final GlobalSettingsRepository globalSettingsRepository;
+  private final UserRepository userRepository;
 
   @GetMapping("/settings")
   private ResponseEntity<SettingsResponse> settings() {
@@ -107,6 +116,25 @@ public class ApiGeneralController {
   public ResponseEntity<?> saveSettings(@RequestBody SettingsResponse settingsResponse) {
     settingsService.saveSettings(settingsResponse);
     return new ResponseEntity(HttpStatus.OK);
+  }
+
+  @GetMapping("/statistics/my")
+  private ResponseEntity<StatisticsResponse> statistic() {
+    return ResponseEntity.ok(statisticService.getStatistic());
+  }
+
+  @GetMapping("/statistics/all")
+  private ResponseEntity<StatisticsResponse> statisticAll() {
+    GlobalSettings mode = globalSettingsRepository.findByCode("STATISTICS_IS_PUBLIC");
+    if (mode.getValue().equals("NO") && (SecurityContextHolder.getContext().getAuthentication()
+        .isAuthenticated())) {
+      String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+      User user = userRepository.findUserByEmail(userEmail);
+      if (user.getIsModerator() == 0) {
+        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+      }
+    }
+    return ResponseEntity.ok(statisticService.getStatisticAll());
   }
 }
 

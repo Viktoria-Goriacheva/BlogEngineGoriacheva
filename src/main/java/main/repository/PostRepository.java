@@ -33,8 +33,13 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
       + "where tags.name = :tag AND posts.is_active = 1 AND posts.moderation_status = 'ACCEPTED' AND posts.time <= NOW()", nativeQuery = true)
   List<Post> findByTag(String tag);
 
-  @Query("FROM Post WHERE id= :id AND isActive = 1 AND moderationStatus = 'ACCEPTED' AND time <= NOW()")
-  Post findByIdPost(Integer id);
+  @Query(value = "SELECT * FROM posts WHERE user_id= :id AND is_active = 1 AND moderation_status = 'ACCEPTED' AND time <= NOW()", nativeQuery = true)
+  List<Post> findPostByIdUser(Integer id);
+  @Query(value = "SELECT time FROM posts WHERE user_id= :id AND is_active = 1 AND moderation_status = 'ACCEPTED' AND time <= NOW() order by time limit 1", nativeQuery = true)
+  LocalDateTime findFirstPostByIdUser(Integer id);
+
+  @Query(value = "SELECT time FROM posts WHERE is_active = 1 AND moderation_status = 'ACCEPTED' AND time <= NOW() order by time limit 1", nativeQuery = true)
+  LocalDateTime findFirstPostInBlog();
 
   @Query("FROM Post WHERE LOWER(title) LIKE LOWER(CONCAT('%',?1,'%'))  AND isActive = 1 AND moderationStatus = 'ACCEPTED' AND time <= NOW()")
   List<Post> findAllByQuery(String path);

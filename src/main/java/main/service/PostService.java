@@ -22,6 +22,7 @@ import main.dto.CommentDTO;
 import main.dto.PostDTO;
 import main.dto.UserDTOForPost;
 import main.dto.UserDTOForPostId;
+import main.model.GlobalSettings;
 import main.model.ModerationStatus;
 import main.model.Post;
 import main.model.PostComment;
@@ -30,6 +31,7 @@ import main.model.PostVote;
 import main.model.Tag;
 import main.model.Tag2Post;
 import main.model.User;
+import main.repository.GlobalSettingsRepository;
 import main.repository.PostCommentRepository;
 import main.repository.PostRepository;
 import main.repository.Tag2PostRepository;
@@ -50,6 +52,7 @@ public class PostService {
   private final PostCommentRepository postCommentRepository;
   private final TagRepository tagRepository;
   private final Tag2PostRepository tag2PostRepository;
+  private final GlobalSettingsRepository globalSettingsRepository;
 
   public PostResponse getAllPosts(PostMode mode, int offset, int limit) {
     PostResponse postResponse = new PostResponse();
@@ -106,6 +109,10 @@ public class PostService {
         .text(textWithoutHTMLTags)
         .time(checkTime(timestamp))
         .build();
+    GlobalSettings mode = globalSettingsRepository.findByCode("POST_PREMODERATION");
+    if (mode.getValue().equals("NO")) {
+      post.setModerationStatus(ModerationStatus.DECLINED);
+    }
     postRepository.save(post);
     post.setTags(addTags(tags, post));
     response.setResult(true);
@@ -132,6 +139,10 @@ public class PostService {
 
     if (user.getIsModerator() == 0) {
       post.setModerationStatus(ModerationStatus.NEW);
+    }
+    GlobalSettings mode = globalSettingsRepository.findByCode("POST_PREMODERATION");
+    if (mode.getValue().equals("NO")) {
+      post.setModerationStatus(ModerationStatus.DECLINED);
     }
     postRepository.save(post);
     post.setTags(addTags(tags, post));
@@ -195,8 +206,9 @@ public class PostService {
     for (PostVote postVote : postVotesList) {
       if (postVote.getValue() == 1) {
         like++;
+      } else {
+        dislike++;
       }
-      dislike++;
     }
     Duration duration = Duration.between(post.getTime(), LocalDateTime.now());
     long secondsAfterCreatePost = (System.currentTimeMillis() / 1000L) - duration.getSeconds();
@@ -350,8 +362,9 @@ public class PostService {
     for (PostVote postVote : postVotesList) {
       if (postVote.getValue() == 1) {
         like++;
+      } else {
+        dislike++;
       }
-      dislike++;
     }
     postDto.setLikeCount(like);
     postDto.setDislikeCount(dislike);
