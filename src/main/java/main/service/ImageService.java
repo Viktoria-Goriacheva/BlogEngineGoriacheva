@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import main.api.response.StatusResponse;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class ImageService {
     }
     String path = "";
     try {
-      path = uploadFileAndGetPath(image);
+      path = uploadFileAndGetPath(image, false);
     } catch (IOException e) {
       e.getStackTrace();                     //logger add
     }
@@ -54,7 +55,7 @@ public class ImageService {
     return result;
   }
 
-  private String uploadFileAndGetPath(MultipartFile image) throws IOException {
+  public String uploadFileAndGetPath(MultipartFile image, boolean userPhoto) throws IOException {
     Path root = Paths.get(uploadPath);
     if (!Files.exists(root)) {
       Files.createDirectory(root);
@@ -81,9 +82,9 @@ public class ImageService {
           .append(".")
           .append(imageType);
       File file = new File(photoPath.toString());
-//      if (userPhoto) {
-//        userImage = Thumbnails.of(userImage).size(30, 30).asBufferedImage();
-//      }
+      if (userPhoto) {
+        userImage = Thumbnails.of(userImage).size(36, 36).asBufferedImage();
+      }
       ImageIO.write(userImage, imageType, file);
       photoPath.insert(0, "/");
       return photoPath.toString();

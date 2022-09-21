@@ -2,9 +2,11 @@ package main.controller;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import main.api.request.CommentRequest;
 import main.api.request.ModerationRequest;
+import main.api.request.ProfileRequest;
 import main.api.response.CalendarResponse;
 import main.api.response.CommentResponse;
 import main.api.response.ModerationResponse;
@@ -22,6 +24,7 @@ import main.service.CalendarService;
 import main.service.CommentService;
 import main.service.ImageService;
 import main.service.ModerationService;
+import main.service.RegisterService;
 import main.service.SettingsService;
 import main.service.SiteInfoService;
 import main.service.StatisticService;
@@ -58,6 +61,7 @@ public class ApiGeneralController {
   private final StatisticService statisticService;
   private final GlobalSettingsRepository globalSettingsRepository;
   private final UserRepository userRepository;
+  private final RegisterService registerService;
 
   @GetMapping("/settings")
   private ResponseEntity<SettingsResponse> settings() {
@@ -135,6 +139,35 @@ public class ApiGeneralController {
       }
     }
     return ResponseEntity.ok(statisticService.getStatisticAll());
+  }
+
+  @PostMapping(value = "/profile/my", consumes = {"application/json"})
+  public ResponseEntity<StatusResponse> changeMyProfileWithoutPhoto(
+      @RequestBody @Valid ProfileRequest editProfileRequest,
+      BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+      return ResponseEntity.badRequest()
+          .body(registerService.getRegisterWithErrors(bindingResult.getAllErrors()));
+    }
+    return ResponseEntity.ok(registerService.changeMyProfileWithoutPhoto(
+        editProfileRequest.getName(),
+        editProfileRequest.getEmail(),
+        editProfileRequest.getPassword(),
+        editProfileRequest.getRemovePhoto()));
+  }
+
+  @PostMapping(value = "/profile/my", consumes = {"multipart/form-data"})
+  public ResponseEntity<StatusResponse> changeMyProfileWithPhoto(
+      @RequestParam MultipartFile photo,
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) String email,
+      @RequestParam(required = false) String password) {
+    StatusResponse statusResponse = registerService.changeMyProfileWithPhoto(photo, name, email,
+        password);
+    if (statusResponse.isResult()) {
+      return ResponseEntity.ok(statusResponse);
+    }
+    return ResponseEntity.badRequest().body(statusResponse);
   }
 }
 
