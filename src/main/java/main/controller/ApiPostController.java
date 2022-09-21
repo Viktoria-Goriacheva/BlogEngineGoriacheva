@@ -1,15 +1,25 @@
 package main.controller;
 
 import lombok.RequiredArgsConstructor;
+import main.api.request.AddPostRequest;
+import main.api.request.VoteRequest;
+import main.api.response.ModerationResponse;
 import main.api.response.PostIdResponse;
 import main.api.response.PostResponse;
+import main.api.response.StatusResponse;
+import main.model.ModerationStatus;
 import main.model.PostStatus;
 import main.repository.PostRepository;
 import main.service.PostMode;
 import main.service.PostService;
+import main.service.VoteService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,10 +27,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/post")
 @RequiredArgsConstructor
-public class ApiPostController{
+public class ApiPostController {
 
   private final PostService postService;
   private final PostRepository postRepository;
+  private final VoteService voteService;
 
   @GetMapping
   public ResponseEntity<PostResponse> getPost(
@@ -64,13 +75,47 @@ public class ApiPostController{
         ResponseEntity.ok(postService.getPostId(ID)) :
         ResponseEntity.notFound().build();
   }
+
   @GetMapping("/my")
   public ResponseEntity<PostResponse> getMyPost(
       @RequestParam(required = false, defaultValue = "0") int offset,
       @RequestParam(required = false, defaultValue = "10") int limit,
-      @RequestParam (value = "status") PostStatus status) {
+      @RequestParam(value = "status") PostStatus status) {
 
     return ResponseEntity.ok(postService.getMyPosts(offset, limit, status));
+  }
+
+  @GetMapping("/moderation")
+  @PreAuthorize("hasAuthority('user:moderate')")
+  public ResponseEntity<PostResponse> getPostForModeration(
+      @RequestParam(value = "status") ModerationStatus status,
+      @RequestParam(required = false, defaultValue = "0") int offset,
+      @RequestParam(required = false, defaultValue = "10") int limit) {
+
+    return ResponseEntity.ok(postService.getAllPostsForModeratoin(status, offset, limit));
+  }
+
+  @PostMapping
+  public ResponseEntity<StatusResponse> addPost(@RequestBody AddPostRequest addPost) {
+    return ResponseEntity.ok(postService.addPost(addPost.getTime(), addPost.getActive(),
+        addPost.getTitle(), addPost.getTags(), addPost.getText()));
+  }
+
+  @PutMapping("/{ID}")
+  public ResponseEntity<StatusResponse> changePost(@RequestBody AddPostRequest addPost,
+      @PathVariable Integer ID) {
+    return ResponseEntity.ok(postService.changePost(addPost.getTime(), addPost.getActive(),
+        addPost.getTitle(), addPost.getTags(), addPost.getText(), ID));
+  }
+
+  @PostMapping("/like")
+  public ResponseEntity<ModerationResponse> setLike(@RequestBody VoteRequest voteRequest) {
+    return ResponseEntity.ok(voteService.setLike(voteRequest.getPostId()));
+  }
+
+  @PostMapping("/dislike")
+  public ResponseEntity<ModerationResponse> setDislike(@RequestBody VoteRequest voteRequest) {
+    return ResponseEntity.ok(voteService.setDislike(voteRequest.getPostId()));
   }
 }
 

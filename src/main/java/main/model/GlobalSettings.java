@@ -6,15 +6,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "global_settings")
 public class GlobalSettings {
@@ -30,4 +31,9 @@ public class GlobalSettings {
   @NotNull
   private String value;
 
+  public GlobalSettings(String code, String name, String value) {
+    this.code = code;
+    this.name = name;
+    this.value = value;
+  }
 }

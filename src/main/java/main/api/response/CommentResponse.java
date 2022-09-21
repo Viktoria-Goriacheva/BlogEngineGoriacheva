@@ -1,17 +1,18 @@
 package main.api.response;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Map;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Component
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RegisterResponse {
-
+public class CommentResponse {
   private boolean result;
-  @JsonInclude(JsonInclude.Include.NON_NULL)
   private Map<String, String> errors;
-
+  private Integer id;
 }

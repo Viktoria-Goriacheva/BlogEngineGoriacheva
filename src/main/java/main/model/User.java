@@ -13,11 +13,12 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import main.repository.Role;
-
+@EqualsAndHashCode
 @Getter
 @Setter
 @Entity
@@ -28,9 +29,8 @@ import main.repository.Role;
 public class User {
 
   @Id
-  @NotNull
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Integer id;
   @Column(name = "is_moderator", nullable = false)
   private byte isModerator;
   @Column(name = "reg_time", nullable = false)

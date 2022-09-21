@@ -33,17 +33,19 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
       + "where tags.name = :tag AND posts.is_active = 1 AND posts.moderation_status = 'ACCEPTED' AND posts.time <= NOW()", nativeQuery = true)
   List<Post> findByTag(String tag);
 
-  @Query("FROM Post WHERE id= :id AND isActive = 1 AND moderationStatus = 'ACCEPTED' AND time <= NOW()")
-  Post findByIdPost(Integer id);
+  @Query(value = "SELECT * FROM posts WHERE user_id= :id AND is_active = 1 AND moderation_status = 'ACCEPTED' AND time <= NOW()", nativeQuery = true)
+  List<Post> findPostByIdUser(Integer id);
+  @Query(value = "SELECT time FROM posts WHERE user_id= :id AND is_active = 1 AND moderation_status = 'ACCEPTED' AND time <= NOW() order by time limit 1", nativeQuery = true)
+  LocalDateTime findFirstPostByIdUser(Integer id);
+
+  @Query(value = "SELECT time FROM posts WHERE is_active = 1 AND moderation_status = 'ACCEPTED' AND time <= NOW() order by time limit 1", nativeQuery = true)
+  LocalDateTime findFirstPostInBlog();
 
   @Query("FROM Post WHERE LOWER(title) LIKE LOWER(CONCAT('%',?1,'%'))  AND isActive = 1 AND moderationStatus = 'ACCEPTED' AND time <= NOW()")
   List<Post> findAllByQuery(String path);
 
   @Query("SELECT user.id FROM Post p WHERE p.id =:id AND p.isActive = 1 AND p.moderationStatus = 'ACCEPTED' AND p.time <= NOW()")
   Integer findIdUser(Integer id);
-
-  @Query("FROM Post WHERE moderationStatus = 'NEW'")
-  List<Post> findModerationPosts();
 
   @Query("FROM Post p INNER JOIN User u ON u.id =p.user WHERE u.email = :email and p.isActive = 0")
   List<Post> findByInactive(String email);
@@ -56,4 +58,16 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
   @Query("FROM Post p INNER JOIN User u ON u.id =p.user WHERE u.email = :email and p.isActive = 1 and p.moderationStatus = 'ACCEPTED'")
   List<Post> findByPublished(String email);
+
+  @Query("FROM Post WHERE (moderatorId = :moderatorId or moderatorId is null) and isActive = 1 and moderationStatus = 'NEW'")
+  List<Post> findByPendingMod(Integer moderatorId);
+
+  @Query("FROM Post WHERE (moderatorId = :moderatorId or moderatorId is null) and isActive = 1 and moderationStatus = 'DECLINED'")
+  List<Post> findByDeclinedMod(Integer moderatorId);
+
+  @Query("FROM Post WHERE (moderatorId = :moderatorId or moderatorId is null) and isActive = 1 and moderationStatus = 'ACCEPTED'")
+  List<Post> findByPublishedMod(Integer moderatorId);
+
+  @Query(value = "FROM Post WHERE moderationStatus = 'NEW'")
+  List<Post> findModerationPosts();
 }
