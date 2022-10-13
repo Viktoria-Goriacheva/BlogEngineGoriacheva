@@ -2,19 +2,24 @@ package com.goriacheva.blog.service;
 
 import com.goriacheva.blog.api.response.PostIdResponse;
 import com.goriacheva.blog.api.response.PostResponse;
+import com.goriacheva.blog.api.response.StatusResponse;
 import com.goriacheva.blog.dto.CommentDto;
 import com.goriacheva.blog.dto.PostDto;
 import com.goriacheva.blog.dto.UserDtoForPost;
 import com.goriacheva.blog.dto.UserDtoForPostId;
+import com.goriacheva.blog.model.GlobalSettings;
 import com.goriacheva.blog.model.ModerationStatus;
+import com.goriacheva.blog.model.Post;
 import com.goriacheva.blog.model.PostComment;
 import com.goriacheva.blog.model.PostStatus;
+import com.goriacheva.blog.model.PostVote;
 import com.goriacheva.blog.model.Tag;
 import com.goriacheva.blog.model.Tag2Post;
 import com.goriacheva.blog.model.User;
 import com.goriacheva.blog.repository.GlobalSettingsRepository;
 import com.goriacheva.blog.repository.PostCommentRepository;
 import com.goriacheva.blog.repository.PostRepository;
+import com.goriacheva.blog.repository.Tag2PostRepository;
 import com.goriacheva.blog.repository.TagRepository;
 import com.goriacheva.blog.repository.UserRepository;
 import java.time.Duration;
@@ -26,18 +31,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import com.goriacheva.blog.api.response.StatusResponse;
-import com.goriacheva.blog.model.GlobalSettings;
-import com.goriacheva.blog.model.Post;
-import com.goriacheva.blog.model.PostVote;
-import com.goriacheva.blog.repository.Tag2PostRepository;
 import org.jsoup.Jsoup;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -116,7 +113,8 @@ public class PostService {
       post.setModerationStatus(ModerationStatus.DECLINED);
     }
     postRepository.save(post);
-    post.setTags(addTags(tags, post));
+    List<Tag> tagList = addTags(tags, post);
+    post.setTags(tagList);
     log.info("Post was successfully created, published and saved to db. Title post: {}", title);
     response.setResult(true);
     return response;
@@ -148,30 +146,32 @@ public class PostService {
       post.setModerationStatus(ModerationStatus.DECLINED);
     }
     postRepository.save(post);
-    post.setTags(addTags(tags, post));
+    List<Tag> tagList = addTags(tags, post);
+    post.setTags(tagList);
     log.info("Post id = {} was successfully modified", id);
     response.setResult(true);
     return response;
   }
 
   private List<Tag> addTags(List<String> tags, Post post) {
-    if (tags.isEmpty()) {
+    if (tags.isEmpty() && (post.getTags() == null)) {
       return null;
     }
-    if (!post.getTags().isEmpty()) {
-      post.getTags().clear();
+    if (post.getTags() != null) {
+      post.setTags(null);
     }
-    Set<Tag> result = new HashSet<>();
-
+    List<Tag> result = new ArrayList<>();
     for (String tagString : tags) {
       Tag tag = new Tag(tagString.toUpperCase());
-      result.add(tag);
-      tagRepository.save(tag);
+      if (!result.contains(tag)) {
+        result.add(tag);
+        tagRepository.save(tag);
+      }
     }
     List<Tag2Post> relations = new ArrayList<>();
     result.forEach(id -> relations.add(new Tag2Post(post, id)));
     tag2PostRepository.saveAll(relations);
-    return result.stream().collect(Collectors.toList());
+    return result;
   }
 
   private LocalDateTime checkTime(long timestamp) {
