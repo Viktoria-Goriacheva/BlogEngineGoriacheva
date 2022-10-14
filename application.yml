@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/blog?useUnicode=true&characterEncoding=utf-8
     username: root
-    password: ecyhbdcbhg346((87fM
+    password: password
     driver-class-name: org.postgresql.Driver
   jpa:
     database : postgresql
@@ -17,8 +17,8 @@ spring:
   mail:
     default-encoding: UTF-8
     host: smtp.gmail.com
-    username: grumblaa@gmail.com
-    password: hcydchtefkirqydg
+    username: grumbla@gmail.com
+    password: password
     port: 587
     protocol: smtp
     tls: true
@@ -34,8 +34,8 @@ server:
 blog:
   title : DevPub
   subtitle : Рассказы разработчиков
-  phone : +7 922 863-65-40
-  email : grumblya@mail.ru
+  phone : +7 922 000-00-00
+  email : grumbla@mail.ru
   copyright : Виктория Горячева
   copyrightFrom : 2005
 upload:
