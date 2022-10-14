@@ -50,7 +50,7 @@ public class PasswordService {
         + url.getProtocol() + "://" + url.getHost() + ":" + port + "/login/change-password/");
     message.append(hash);
     SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-    simpleMailMessage.setFrom("grumblaa@gmail.com");
+    simpleMailMessage.setFrom("grumbla@gmail.co");
     simpleMailMessage.setTo(email);
     simpleMailMessage.setSubject("Восстановление пароля");
     simpleMailMessage.setText(message.toString());
